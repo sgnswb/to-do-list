@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.js"></script>
+
+<style type="text/css">
+  .container {
+    margin-top: 200px;
+  }
+  .list-wrap {
+    margin-bottom: 10px;
+  }
+  .row {
+    padding-bottom: 70px;
+    background-color: #ddd;
+  }
+  .strike {
+    text-decoration: line-through;
+  }
+
+</style>
+</head>
+
+
+<title>To Do List by angularjs</title>
+
+<body ng-app="app">
+  
+  <div class="container" ng-controller="ItemsController">
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <h2>To Do List</h2>
+        <button type="button" class="btn btn-primary glyphicon glyphicon-plus" ng-click="create()"></button>
+      </div>
+      <div class="col-lg-8 col-lg-offset-2 list-wrap" ng-repeat="item in items">
+        <div class="input-group">
+          <span class="input-group-addon" >
+            <input type="checkbox" aria-label="..." ng-model="item.deleted" ng-click="check(item)">
+          </span>
+          <input type="text" class="form-control" ng-controller="InputController" ng-model="item.content" ng-class="{strike: item.deleted}" ng-disabled="item.deleted">
+          <span class="input-group-btn">
+          <button class="btn btn-danger glyphicon glyphicon-minus" type="button" ng-click="destroy(item)"></button>
+          </span>
+        </div>
+        <p class="text-center text-warning" ng-show="item.warning">Please enter someting for your to-do-list</p>
+      </div>
+      <p class="col-lg-12 text-center text-warning" ng-show="deleteLast">can not delete last list</p>
+    </div>
+  </div>
+
+
+<script>
+angular.module('app', []);
+angular.module('app').config(['$controllerProvider', function($controllerProvider) {
+  $controllerProvider.allowGlobals();
+}]);
+
+  function ItemsController($scope, $element) {
+    $scope.deleteLast = false;
+    $scope.items = [
+    {deleted: false, content: '', warning: false}
+    ];
+
+    $scope.create = function() {
+      $scope.items.push({deleted: false, content: ''});
+      $scope.deleteLast = false;
+    };
+
+    $scope.destroy = function(item) {
+      var index = $scope.items.indexOf(item);
+      console.log('items length: ' + $scope.items.length);
+      if($scope.items.length > 1) {
+        $scope.items.splice(index, 1);
+      }
+      else {
+        $scope.deleteLast = true;
+      }
+  };
+
+    $scope.check = function(item) {
+      if (item.content.trim() === '') {
+        item.deleted = false;
+        item.warning = true;
+      }
+      else {
+        item.warning = false;
+      }
+    };
+  }
+
+  function InputController ($scope, $element) {
+    $element.bind('keyup', function (event) {
+      $scope.item.warning = false;
+    });
+  }
+</script>
+
+</body>
+</html>
